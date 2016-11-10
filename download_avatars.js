@@ -1,6 +1,6 @@
 var request = require('request');
 
-console.log('Welcome to the GitHub Avatar Downloader!');
+console.log('\nWelcome to the GitHub Avatar Downloader!\n');
 
 function getRepoContributors(repoOwner, repoName, cb) {
 
@@ -9,20 +9,28 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
   var requestURL = 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
 
-  console.log(requestURL);
+  console.log("< URL >\n" + requestURL + "\n");
+
+  var option = {
+    headers: {'user-agent': 'GitHub Avatar Downloader'}
+  };
+  var body = '';
+
+  request.get(requestURL, option)
+  .on('error', function(err) {
+    throw err;
+  })
+  .on('response', function(response) {
+    console.log('Response Status Code: ', response.statusCode + '\n');
+    response.setEncoding('utf8');
+    response.on('data', function(data) {
+      body = body + data;
+    });
+  })
+  .on('end', function() {
+    console.log("Body: " + body + '\n');
+  });
 }
-
-// function printResult(err, result) {
-//   console.log("Errors: ", err);
-//   console.log("Result: ", result);
-// }
-
-// var repoInfo = {
-//   repoOwner: "jquery",
-//   repoName: "jquery"
-// };
-
-// getRepoContributors(repoInfo.repoOwner, repoInfo.repoName, printResult);
 
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors: ", err);
